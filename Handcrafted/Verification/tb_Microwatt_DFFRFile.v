@@ -13,10 +13,10 @@
 
 module tb_Microwatt_DFFRFile;
     reg CLK;
-    reg [4:0] R1;
-    reg [4:0] R2;
-    reg [4:0] R3;
-    reg [4:0] RW;
+    reg [5:0] R1;
+    reg [5:0] R2;
+    reg [5:0] R3;
+    reg [5:0] RW;
     wire [63:0] D1;
     wire [63:0] D2;
     wire [63:0] D3;
@@ -69,7 +69,7 @@ module tb_Microwatt_DFFRFile;
         VGND = 0;
 
         // Initialize register file
-        for (i=0; i<32; i=i+1) begin
+        for (i=0; i<64; i=i+1) begin
             HEX_DIG = i;
             FMT_HEX_DIG = {8{HEX_DIG}};
 
@@ -82,10 +82,10 @@ module tb_Microwatt_DFFRFile;
         end
 
         // Read register file
-        for (i=0; i<32; i=i+1) begin
-            R1 = i%32;
-            R2 = (i+1)%32;
-            R3 = (i+2)%32;
+        for (i=0; i<64; i=i+1) begin
+            R1 = i%64;
+            R2 = (i+1)%64;
+            R3 = (i+2)%64;
             #1
             HEX_DIG = R1;
             FMT_HEX_DIG = {8{HEX_DIG}};

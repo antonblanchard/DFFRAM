@@ -1,7 +1,7 @@
 /*
  * Microwatt DFFRFile
  *
- * 32x64 Register File with 3R1W ports and clock gating for SKY130A
+ * 64x64bit register File with 3R and 1W ports and clock gating for SKY130A
  *
  * Author: Anton Blanchard <anton@linux.ibm.com>
  *
@@ -17,16 +17,16 @@ module Microwatt_DFFRFile (
     input VPWR,
     input VGND,
 `endif
-    input [4:0]   R1, R2, R3, RW,
+    input [5:0]   R1, R2, R3, RW,
     input [63:0]  DW,
     output [63:0] D1, D2, D3,
     input CLK,
     input WE
 );
 
-    wire [31:0] sel1, sel2, sel3, selw;
+    wire [63:0] sel1, sel2, sel3, selw;
 
-    DEC5x32 DEC0 (
+    DEC6x64 DEC0 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -35,7 +35,7 @@ module Microwatt_DFFRFile (
         .SEL(sel1)
     );
 
-    DEC5x32 DEC1 (
+    DEC6x64 DEC1 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -44,7 +44,7 @@ module Microwatt_DFFRFile (
         .SEL(sel2)
     );
 
-    DEC5x32 DEC2 (
+    DEC6x64 DEC2 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -53,7 +53,7 @@ module Microwatt_DFFRFile (
         .SEL(sel3)
     );
 
-    DEC5x32 DEC3 (
+    DEC6x64 DEC3 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -64,7 +64,7 @@ module Microwatt_DFFRFile (
 
     generate
         genvar e;
-        for (e=0; e<32; e=e+1)
+        for (e=0; e<64; e=e+1)
             RFWORD RFW (
             `ifdef USE_POWER_PINS
                 .VPWR(VPWR),
@@ -397,22 +397,22 @@ module DEC3x8 (
     );
 endmodule
 
-module DEC5x32 (
+module DEC6x64 (
 `ifdef USE_POWER_PINS
     input VPWR,
     input VGND,
 `endif
-    input  [4:0]  A,
-    output [31:0] SEL
+    input  [5:0]  A,
+    output [63:0] SEL
 );
-    wire [3:0] EN;
+    wire [7:0] EN;
 
-    DEC2x4 D (
+    DEC3x8 D (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
     `endif
-        .A(A[4:3]),
+        .A(A[5:3]),
         .SEL(EN),
         .EN(1'b1)
     );
@@ -455,5 +455,45 @@ module DEC5x32 (
         .A(A[2:0]),
         .SEL(SEL[31:24]),
         .EN(EN[3])
+    );
+
+    DEC3x8 D4 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+    `endif
+        .A(A[2:0]),
+        .SEL(SEL[39:32]),
+        .EN(EN[4])
+    );
+
+    DEC3x8 D5 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+    `endif
+        .A(A[2:0]),
+        .SEL(SEL[47:40]),
+        .EN(EN[5])
+    );
+
+    DEC3x8 D6 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+    `endif
+        .A(A[2:0]),
+        .SEL(SEL[55:48]),
+        .EN(EN[6])
+    );
+
+    DEC3x8 D7 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+    `endif
+        .A(A[2:0]),
+        .SEL(SEL[63:56]),
+        .EN(EN[7])
     );
 endmodule
