@@ -97,7 +97,9 @@ module RFWORD (
 );
 
     wire [63:0] q_wire;
+    wire [63:0] fwd_wire;
     wire we_wire;
+    wire [7:0] we_wire_buf;
     wire [7:0] SEL1_B, SEL2_B, SEL3_B;
     wire [7:0] GCLK;
 
@@ -108,8 +110,8 @@ module RFWORD (
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .Y(SEL1_B),
-        .A(SEL1)
+        .A(SEL1),
+        .Y(SEL1_B)
     );
 
     sky130_fd_sc_hd__inv_2 INV2[7:0] (
@@ -119,8 +121,8 @@ module RFWORD (
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .Y(SEL2_B),
-        .A(SEL2)
+        .A(SEL2),
+        .Y(SEL2_B)
     );
 
     sky130_fd_sc_hd__inv_2 INV3[7:0] (
@@ -130,8 +132,8 @@ module RFWORD (
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .Y(SEL3_B),
-        .A(SEL3)
+        .A(SEL3),
+        .Y(SEL3_B)
     );
 
     sky130_fd_sc_hd__and2_1 CGAND (
@@ -146,6 +148,17 @@ module RFWORD (
         .X(we_wire)
     );
 
+    sky130_fd_sc_hd__clkbuf_2 WIREBUF[7:0] (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A(we_wire),
+        .X(we_wire_buf)
+    );
+
     sky130_fd_sc_hd__dlclkp_1 CG[7:0] (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
@@ -154,8 +167,8 @@ module RFWORD (
         .VNB(VGND),
     `endif
         .CLK(CLK),
-        .GCLK(GCLK),
-        .GATE(we_wire)
+        .GATE(we_wire),
+        .GCLK(GCLK)
     );
 
     generate
@@ -168,9 +181,22 @@ module RFWORD (
                 .VPB(VPWR),
                 .VNB(VGND),
             `endif
+                .CLK(GCLK[i/8]),
                 .D(DW[i]),
-                .Q(q_wire[i]),
-                .CLK(GCLK[i/8])
+                .Q(q_wire[i])
+            );
+
+            sky130_fd_sc_hd__mux2_1 FWD_MUX (
+            `ifdef USE_POWER_PINS
+                .VPWR(VPWR),
+                .VGND(VGND),
+                .VPB(VPWR),
+                .VNB(VGND),
+            `endif
+                .A0(q_wire[i]),
+                .A1(DW[i]),
+                .S(we_wire_buf[i/8]),
+                .X(fwd_wire[i])
             );
 
             sky130_fd_sc_hd__ebufn_2 OBUF1 (
@@ -180,9 +206,9 @@ module RFWORD (
                 .VPB(VPWR),
                 .VNB(VGND),
             `endif
-                .A(q_wire[i]),
-                .Z(D1[i]),
-                .TE_B(SEL1_B[i/8])
+                .TE_B(SEL1_B[i/8]),
+                .A(fwd_wire[i]),
+                .Z(D1[i])
             );
 
             sky130_fd_sc_hd__ebufn_2 OBUF2 (
@@ -192,9 +218,9 @@ module RFWORD (
                 .VPB(VPWR),
                 .VNB(VGND),
             `endif
-                .A(q_wire[i]),
-                .Z(D2[i]),
-                .TE_B(SEL2_B[i/8])
+                .TE_B(SEL2_B[i/8]),
+                .A(fwd_wire[i]),
+                .Z(D2[i])
             );
 
             sky130_fd_sc_hd__ebufn_2 OBUF3 (
@@ -204,9 +230,9 @@ module RFWORD (
                 .VPB(VPWR),
                 .VNB(VGND),
             `endif
-                .A(q_wire[i]),
-                .Z(D3[i]),
-                .TE_B(SEL3_B[i/8])
+                .TE_B(SEL3_B[i/8]),
+                .A(fwd_wire[i]),
+                .Z(D3[i])
             );
         end
     endgenerate
@@ -495,5 +521,28 @@ module DEC6x64 (
         .A(A[2:0]),
         .SEL(SEL[63:56]),
         .EN(EN[7])
+    );
+endmodule
+
+module MUX2x1_32(
+`ifdef USE_POWER_PINS
+    input VPWR,
+    input VGND,
+`endif
+    input   [31:0]      A0, A1,
+    input   [0:0]       S,
+    output  [31:0]      X
+);
+    sky130_fd_sc_hd__mux2_1 MUX[31:0] (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A0(A0),
+        .A1(A1),
+        .S(S[0]),
+        .X(X)
     );
 endmodule
