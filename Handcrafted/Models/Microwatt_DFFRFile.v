@@ -238,79 +238,42 @@ module RFWORD (
     endgenerate
 endmodule
 
-module DEC2x4 (
-`ifdef USE_POWER_PINS
-    input VPWR,
-    input VGND,
-`endif
-    input           EN,
-    input   [1:0]   A,
-    output  [3:0]   SEL
-);
-    sky130_fd_sc_hd__nor3b_4 AND0 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .Y(SEL[0]),
-        .A(A[0]),
-        .B(A[1]),
-        .C_N(EN)
-    );
-
-    sky130_fd_sc_hd__and3b_4 AND1 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .X(SEL[1]),
-        .A_N(A[1]),
-        .B(A[0]),
-        .C(EN)
-    );
-
-    sky130_fd_sc_hd__and3b_4 AND2 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .X(SEL[2]),
-        .A_N(A[0]),
-        .B(A[1]),
-        .C(EN)
-    );
-
-    sky130_fd_sc_hd__and3_4  AND3 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .X(SEL[3]),
-        .A(A[1]),
-        .B(A[0]),
-        .C(EN)
-    );
-
-endmodule
-
 module DEC3x8 (
 `ifdef USE_POWER_PINS
     input VPWR,
     input VGND,
 `endif
-    input           EN,
-    input [2:0]     A,
-    output [7:0]    SEL
+    input        EN,
+    input [2:0]  A,
+    output [7:0] SEL
 );
-    sky130_fd_sc_hd__nor4b_2  AND0 ( // 000
+
+    wire [2:0]  A_buf;
+    wire        EN_buf;
+
+    sky130_fd_sc_hd__clkbuf_1 ABUF[2:0] (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .X(A_buf),
+        .A(A)
+    );
+
+    sky130_fd_sc_hd__clkbuf_2 ENBUF (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .X(EN_buf),
+        .A(EN)
+    );
+
+    sky130_fd_sc_hd__nor4b_2   AND0 ( // 000
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -318,13 +281,13 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .Y(SEL[0]),
-        .A(A[0]),
-        .B(A[1]),
-        .C(A[2]),
-        .D_N(EN)
+        .A(A_buf[0]),
+        .B(A_buf[1]),
+        .C(A_buf[2]),
+        .D_N(EN_buf)
     );
 
-    sky130_fd_sc_hd__and4bb_2 AND1 ( // 001
+    sky130_fd_sc_hd__and4bb_2   AND1 ( // 001
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -332,13 +295,13 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .X(SEL[1]),
-        .A_N(A[2]),
-        .B_N(A[1]),
-        .C(A[0]),
-        .D(EN)
+        .A_N(A_buf[2]),
+        .B_N(A_buf[1]),
+        .C(A_buf[0]),
+        .D(EN_buf)
     );
 
-    sky130_fd_sc_hd__and4bb_2 AND2 ( // 010
+    sky130_fd_sc_hd__and4bb_2   AND2 ( // 010
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -346,13 +309,13 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .X(SEL[2]),
-        .A_N(A[2]),
-        .B_N(A[0]),
-        .C(A[1]),
-        .D(EN)
+        .A_N(A_buf[2]),
+        .B_N(A_buf[0]),
+        .C(A_buf[1]),
+        .D(EN_buf)
     );
 
-    sky130_fd_sc_hd__and4b_2  AND3 ( // 011
+    sky130_fd_sc_hd__and4b_2    AND3 ( // 011
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -360,13 +323,13 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .X(SEL[3]),
-        .A_N(A[2]),
-        .B(A[1]),
-        .C(A[0]),
-        .D(EN)
+        .A_N(A_buf[2]),
+        .B(A_buf[1]),
+        .C(A_buf[0]),
+        .D(EN_buf)
     );
 
-    sky130_fd_sc_hd__and4bb_2 AND4 ( // 100
+    sky130_fd_sc_hd__and4bb_2   AND4 ( // 100
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -374,13 +337,13 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .X(SEL[4]),
-        .A_N(A[0]),
-        .B_N(A[1]),
-        .C(A[2]),
-        .D(EN)
+        .A_N(A_buf[0]),
+        .B_N(A_buf[1]),
+        .C(A_buf[2]),
+        .D(EN_buf)
     );
 
-    sky130_fd_sc_hd__and4b_2  AND5 ( // 101
+    sky130_fd_sc_hd__and4b_2    AND5 ( // 101
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -388,13 +351,13 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .X(SEL[5]),
-        .A_N(A[1]),
-        .B(A[0]),
-        .C(A[2]),
-        .D(EN)
+        .A_N(A_buf[1]),
+        .B(A_buf[0]),
+        .C(A_buf[2]),
+        .D(EN_buf)
     );
 
-    sky130_fd_sc_hd__and4b_2  AND6 ( // 110
+    sky130_fd_sc_hd__and4b_2    AND6 ( // 110
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -402,13 +365,13 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .X(SEL[6]),
-        .A_N(A[0]),
-        .B(A[1]),
-        .C(A[2]),
-        .D(EN)
+        .A_N(A_buf[0]),
+        .B(A_buf[1]),
+        .C(A_buf[2]),
+        .D(EN_buf)
     );
 
-    sky130_fd_sc_hd__and4_2   AND7 ( // 111
+    sky130_fd_sc_hd__and4_2     AND7 ( // 111
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -416,10 +379,10 @@ module DEC3x8 (
         .VNB(VGND),
     `endif
         .X(SEL[7]),
-        .A(A[0]),
-        .B(A[1]),
-        .C(A[2]),
-        .D(EN)
+        .A(A_buf[0]),
+        .B(A_buf[1]),
+        .C(A_buf[2]),
+        .D(EN_buf)
     );
 endmodule
 
@@ -428,121 +391,46 @@ module DEC6x64 (
     input VPWR,
     input VGND,
 `endif
-    input  [5:0]  A,
-    output [63:0] SEL
+    input           EN,
+    input   [5:0]   A,
+    output  [63:0] SEL
 );
-    wire [7:0] EN;
+    wire [7:0] SEL0_w ;
+    wire [2:0] A_buf;
 
-    DEC3x8 D (
+    DEC3x8 DEC_L0 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
     `endif
+        .EN(EN),
         .A(A[5:3]),
-        .SEL(EN),
-        .EN(1'b1)
+        .SEL(SEL0_w)
     );
 
-    DEC3x8 D0 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[7:0]),
-        .EN(EN[0])
-    );
-
-    DEC3x8 D1 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[15:8]),
-        .EN(EN[1])
-    );
-
-    DEC3x8 D2 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[23:16]),
-        .EN(EN[2])
-    );
-
-    DEC3x8 D3 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[31:24]),
-        .EN(EN[3])
-    );
-
-    DEC3x8 D4 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[39:32]),
-        .EN(EN[4])
-    );
-
-    DEC3x8 D5 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[47:40]),
-        .EN(EN[5])
-    );
-
-    DEC3x8 D6 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[55:48]),
-        .EN(EN[6])
-    );
-
-    DEC3x8 D7 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-    `endif
-        .A(A[2:0]),
-        .SEL(SEL[63:56]),
-        .EN(EN[7])
-    );
-endmodule
-
-module MUX2x1_32(
-`ifdef USE_POWER_PINS
-    input VPWR,
-    input VGND,
-`endif
-    input   [31:0]      A0, A1,
-    input   [0:0]       S,
-    output  [31:0]      X
-);
-    sky130_fd_sc_hd__mux2_1 MUX[31:0] (
+    sky130_fd_sc_hd__clkbuf_16 ABUF[2:0] (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .A0(A0),
-        .A1(A1),
-        .S(S[0]),
-        .X(X)
+        .X(A_buf),
+        .A(A[2:0])
     );
+
+    generate
+        genvar i;
+        for (i=0; i<8; i=i+1) begin : DEC_L1
+            DEC3x8 U (
+            `ifdef USE_POWER_PINS
+                .VPWR(VPWR),
+                .VGND(VGND),
+            `endif
+                .EN(SEL0_w[i]),
+                .A(A_buf),
+                .SEL(SEL[7+8*i: 8*i])
+            );
+        end
+    endgenerate
 endmodule
