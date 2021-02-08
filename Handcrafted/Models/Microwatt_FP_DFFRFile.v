@@ -392,7 +392,6 @@ module DEC4x10(
     input VGND,
 `endif
     input [3:0] A,
-    input EN,
     output [9:0] SEL
 );
 
@@ -403,11 +402,52 @@ module DEC4x10(
     wire _04_;
     wire _05_;
     wire _06_;
-    wire _07_;
-    wire _08_;
-    wire _09_;
 
-    sky130_fd_sc_hd__buf_2 comb0 (
+    sky130_fd_sc_hd__inv_1 comb0 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A(A[3]),
+        .Y(_00_)
+    );
+    sky130_fd_sc_hd__nand2b_1 comb1 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A_N(A[0]),
+        .B(A[2]),
+        .Y(_01_)
+    );
+    sky130_fd_sc_hd__a21oi_1 comb2 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A1(A[3]),
+        .A2(A[2]),
+        .B1(A[1]),
+        .Y(_02_)
+    );
+    sky130_fd_sc_hd__nand2b_1 comb3 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A_N(A[1]),
+        .B(A[0]),
+        .Y(_03_)
+    );
+    sky130_fd_sc_hd__nand2_1 comb4 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -415,43 +455,10 @@ module DEC4x10(
         .VNB(VGND),
     `endif
         .A(A[1]),
-        .X(_00_)
+        .B(A[0]),
+        .Y(_04_)
     );
-    sky130_fd_sc_hd__or3b_4 comb1 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(A[2]),
-        .B(A[3]),
-        .C_N(EN),
-        .X(_01_)
-    );
-    sky130_fd_sc_hd__nand2_1 comb2 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(A[0]),
-        .B(EN),
-        .Y(_02_)
-    );
-    sky130_fd_sc_hd__nand2_1 comb3 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(A[0]),
-        .B(_00_),
-        .Y(_03_)
-    );
-    sky130_fd_sc_hd__nand2b_1 comb4 (
+    sky130_fd_sc_hd__nand2b_1 comb5 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -460,33 +467,9 @@ module DEC4x10(
     `endif
         .A_N(A[3]),
         .B(A[2]),
-        .Y(_04_)
+        .Y(_05_)
     );
-    sky130_fd_sc_hd__or3b_1 comb5 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(A[0]),
-        .B(_00_),
-        .C_N(EN),
-        .X(_05_)
-    );
-    sky130_fd_sc_hd__nand3_1 comb6 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(A[0]),
-        .B(_00_),
-        .C(EN),
-        .Y(_06_)
-    );
-    sky130_fd_sc_hd__nand2b_1 comb7 (
+    sky130_fd_sc_hd__nand2b_1 comb6 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -495,34 +478,35 @@ module DEC4x10(
     `endif
         .A_N(A[2]),
         .B(A[3]),
-        .Y(_07_)
-    );
-    sky130_fd_sc_hd__o21ai_0 comb8 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A1(_00_),
-        .A2(A[2]),
-        .B1(A[3]),
-        .Y(_08_)
-    );
-    sky130_fd_sc_hd__nand3b_1 comb9 (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A_N(A[0]),
-        .B(_00_),
-        .C(A[2]),
-        .Y(_09_)
+        .Y(_06_)
     );
 
-    sky130_fd_sc_hd__nor3_1 _12_ (
+    sky130_fd_sc_hd__nor4_1 sel0 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A(A[1]),
+        .B(A[0]),
+        .C(A[3]),
+        .D(A[2]),
+        .Y(SEL[0])
+    );
+    sky130_fd_sc_hd__nor3_1 sel1 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A(A[3]),
+        .B(A[2]),
+        .C(_03_),
+        .Y(SEL[1])
+    );
+    sky130_fd_sc_hd__nor4b_1 sel2 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -530,47 +514,47 @@ module DEC4x10(
         .VNB(VGND),
     `endif
         .A(A[0]),
-        .B(_00_),
-        .C(_01_),
-        .Y(SEL[0])
-    );
-    sky130_fd_sc_hd__nor4_1 _14_ (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(_00_),
-        .B(A[2]),
-        .C(A[3]),
-        .D(_02_),
-        .Y(SEL[1])
-    );
-    sky130_fd_sc_hd__nor3b_2 _15_ (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(_01_),
-        .B(A[0]),
-        .C_N(_00_),
+        .B(A[3]),
+        .C(A[2]),
+        .D_N(A[1]),
         .Y(SEL[2])
     );
-    sky130_fd_sc_hd__nor2_1 _17_ (
+    sky130_fd_sc_hd__nor3_1 sel3 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .A(_01_),
-        .B(_03_),
+        .A(A[3]),
+        .B(A[2]),
+        .C(_04_),
         .Y(SEL[3])
     );
-    sky130_fd_sc_hd__nor2_1 _20_ (
+    sky130_fd_sc_hd__nor3_1 sel4 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A(A[1]),
+        .B(A[0]),
+        .C(_05_),
+        .Y(SEL[4])
+    );
+    sky130_fd_sc_hd__nor2_1 sel5 (
+    `ifdef USE_POWER_PINS
+        .VPWR(VPWR),
+        .VGND(VGND),
+        .VPB(VPWR),
+        .VNB(VGND),
+    `endif
+        .A(_03_),
+        .B(_05_),
+        .Y(SEL[5])
+    );
+    sky130_fd_sc_hd__nor2_1 sel6 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
@@ -579,64 +563,41 @@ module DEC4x10(
     `endif
         .A(_04_),
         .B(_05_),
-        .Y(SEL[4])
-    );
-    sky130_fd_sc_hd__nor3_1 _21_ (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(_00_),
-        .B(_02_),
-        .C(_04_),
-        .Y(SEL[5])
-    );
-    sky130_fd_sc_hd__nor2_1 _23_ (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(_04_),
-        .B(_06_),
         .Y(SEL[6])
     );
-    sky130_fd_sc_hd__nor2_1 _25_ (
+    sky130_fd_sc_hd__nor3_1 sel7 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .A(_05_),
-        .B(_07_),
+        .A(A[1]),
+        .B(A[0]),
+        .C(_06_),
         .Y(SEL[7])
     );
-    sky130_fd_sc_hd__nor3_1 _26_ (
+    sky130_fd_sc_hd__nor2_1 sel8 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .A(_00_),
-        .B(_02_),
-        .C(_07_),
+        .A(_03_),
+        .B(_06_),
         .Y(SEL[8])
     );
-    sky130_fd_sc_hd__a21boi_0 _29_ (
+    sky130_fd_sc_hd__a21oi_1 sel9 (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
         .VGND(VGND),
         .VPB(VPWR),
         .VNB(VGND),
     `endif
-        .A1(_08_),
-        .A2(_09_),
-        .B1_N(EN),
+        .A1(_00_),
+        .A2(_01_),
+        .B1(_02_),
         .Y(SEL[9])
     );
 endmodule
@@ -657,7 +618,6 @@ module DEC7x80 (
         .VPWR(VPWR),
         .VGND(VGND),
     `endif
-        .EN(1'b1),
         .A(A[6:3]),
         .SEL(SEL0_w)
     );
