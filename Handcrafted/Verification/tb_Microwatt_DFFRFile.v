@@ -89,19 +89,19 @@ module tb_Microwatt_DFFRFile;
             #1
             HEX_DIG = R1;
             FMT_HEX_DIG = {8{HEX_DIG}};
-            if (D1 != FMT_HEX_DIG) begin
+            if (D1 !== FMT_HEX_DIG) begin
                 $display("R1 bad register read exp %x got %x", FMT_HEX_DIG, D1);
                 $fatal;
             end
             HEX_DIG = R2;
             FMT_HEX_DIG = {8{HEX_DIG}};
-            if (D2 != FMT_HEX_DIG) begin
+            if (D2 !== FMT_HEX_DIG) begin
                 $display("R2 bad register read exp %x got %x", FMT_HEX_DIG, D2);
                 $fatal;
             end
             HEX_DIG = R3;
             FMT_HEX_DIG = {8{HEX_DIG}};
-            if (D3 != FMT_HEX_DIG) begin
+            if (D3 !== FMT_HEX_DIG) begin
                 $display("R3 bad register read exp %x got %x", FMT_HEX_DIG, D3);
                 $fatal;
             end
@@ -118,19 +118,19 @@ module tb_Microwatt_DFFRFile;
         R2 = 10;
         R3 = 12;
         #1
-        if (D1 != FMT_HEX_DIG) begin
+        if (D1 !== FMT_HEX_DIG) begin
             $display("R3 bad register read exp %x got %x", FMT_HEX_DIG, D1);
             $fatal;
         end
         HEX_DIG = 4'hA;
         FMT_HEX_DIG = {8{HEX_DIG}};
-        if (D2 != FMT_HEX_DIG) begin
+        if (D2 !== FMT_HEX_DIG) begin
             $display("R3 bad register read exp %x got %x", FMT_HEX_DIG, D2);
             $fatal;
         end
         HEX_DIG = 4'hC;
         FMT_HEX_DIG = {8{HEX_DIG}};
-        if (D3 != FMT_HEX_DIG) begin
+        if (D3 !== FMT_HEX_DIG) begin
             $display("R3 bad register read exp %x got %x", FMT_HEX_DIG, D3);
             $fatal;
         end
