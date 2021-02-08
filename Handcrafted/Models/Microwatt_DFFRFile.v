@@ -391,7 +391,6 @@ module DEC6x64 (
     input VPWR,
     input VGND,
 `endif
-    input           EN,
     input   [5:0]   A,
     output  [63:0] SEL
 );
@@ -403,7 +402,7 @@ module DEC6x64 (
         .VPWR(VPWR),
         .VGND(VGND),
     `endif
-        .EN(EN),
+        .EN(1'b1),
         .A(A[5:3]),
         .SEL(SEL0_w)
     );
