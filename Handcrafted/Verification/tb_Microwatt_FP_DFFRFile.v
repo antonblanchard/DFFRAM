@@ -107,6 +107,7 @@ module tb_Microwatt_DFFRFile;
             end
         end
 
+`ifdef FORWARDING
         // Test forwarding
         @(posedge CLK);
         HEX_DIG = 4'hF;
@@ -134,6 +135,7 @@ module tb_Microwatt_DFFRFile;
             $display("R3 bad register read exp %x got %x", FMT_HEX_DIG, D3);
             $fatal;
         end
+`endif
 
         $finish;
     end

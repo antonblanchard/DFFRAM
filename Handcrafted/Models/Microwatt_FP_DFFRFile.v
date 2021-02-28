@@ -97,9 +97,7 @@ module RFWORD (
 );
 
     wire [63:0] q_wire;
-    wire [63:0] fwd_wire;
     wire we_wire;
-    wire [7:0] we_wire_buf;
     wire [7:0] SEL1_B, SEL2_B, SEL3_B;
     wire [7:0] GCLK;
 
@@ -148,17 +146,6 @@ module RFWORD (
         .X(we_wire)
     );
 
-    sky130_fd_sc_hd__clkbuf_2 WIREBUF[7:0] (
-    `ifdef USE_POWER_PINS
-        .VPWR(VPWR),
-        .VGND(VGND),
-        .VPB(VPWR),
-        .VNB(VGND),
-    `endif
-        .A(we_wire),
-        .X(we_wire_buf)
-    );
-
     sky130_fd_sc_hd__dlclkp_1 CG[7:0] (
     `ifdef USE_POWER_PINS
         .VPWR(VPWR),
@@ -186,19 +173,6 @@ module RFWORD (
                 .Q(q_wire[i])
             );
 
-            sky130_fd_sc_hd__mux2_1 FWD_MUX (
-            `ifdef USE_POWER_PINS
-                .VPWR(VPWR),
-                .VGND(VGND),
-                .VPB(VPWR),
-                .VNB(VGND),
-            `endif
-                .A0(q_wire[i]),
-                .A1(DW[i]),
-                .S(we_wire_buf[i/8]),
-                .X(fwd_wire[i])
-            );
-
             sky130_fd_sc_hd__ebufn_2 OBUF1 (
             `ifdef USE_POWER_PINS
                 .VPWR(VPWR),
@@ -207,7 +181,7 @@ module RFWORD (
                 .VNB(VGND),
             `endif
                 .TE_B(SEL1_B[i/8]),
-                .A(fwd_wire[i]),
+                .A(q_wire[i]),
                 .Z(D1[i])
             );
 
@@ -219,7 +193,7 @@ module RFWORD (
                 .VNB(VGND),
             `endif
                 .TE_B(SEL2_B[i/8]),
-                .A(fwd_wire[i]),
+                .A(q_wire[i]),
                 .Z(D2[i])
             );
 
@@ -231,7 +205,7 @@ module RFWORD (
                 .VNB(VGND),
             `endif
                 .TE_B(SEL3_B[i/8]),
-                .A(fwd_wire[i]),
+                .A(q_wire[i]),
                 .Z(D3[i])
             );
         end
