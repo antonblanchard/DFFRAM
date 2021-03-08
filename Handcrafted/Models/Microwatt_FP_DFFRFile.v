@@ -138,7 +138,7 @@ module Microwatt_FP_DFFRFile (
         //.A3(LO[0]),
         .S0(R1[5]),
         .S1(R1[6]),
-	.X(D1)
+        .X(D1)
     );
 
     sky130_fd_sc_hd__mux4_1 D2_MUX[63:0] (
@@ -154,7 +154,7 @@ module Microwatt_FP_DFFRFile (
         //.A3(LO[1]),
         .S0(R2[5]),
         .S1(R2[6]),
-	.X(D2)
+        .X(D2)
     );
 
     sky130_fd_sc_hd__mux4_1 D3_MUX[63:0] (
@@ -170,7 +170,7 @@ module Microwatt_FP_DFFRFile (
         //.A3(LO[2]),
         .S0(R3[5]),
         .S1(R3[6]),
-	.X(D3)
+        .X(D3)
     );
 
 endmodule
